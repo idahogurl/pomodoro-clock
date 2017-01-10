@@ -1,0 +1,205 @@
+//User Story: I can add, subtract, multiply and divide two numbers.
+
+//User Story: I can clear the input field with a clear button.
+
+//User Story: I can keep chaining mathematical operations together until I hit the equal button, and the calculator will tell me the correct output.
+//when break is done start the session again
+
+class LengthControl extends React.Component<any,{}> {
+ 
+  constructor(props) {
+    super(props);
+    this.fill = this.fill.bind(this);
+  }
+  fill():number[] {
+    let options:number[] = [];
+    //start = 2;
+    for (let i = this.props.default; i > 0; i--) {
+      options.push(i);
+    }
+    return options;
+  }
+  render() {
+  var options = this.fill(this.props.length).map(
+    function(item) {
+      return (<option>{item}</option>)
+    }
+  );
+  return (
+      <div>
+      <div className="text-capitalize">{this.props.id}</div>
+      <div>
+      <select onChange={this.props.onChange} id={this.props.id}>
+        {options}
+      </select>
+      </div>
+      </div>
+    );
+  }
+}
+interface ClockControlProps {
+  name: string;
+  buttonClass: string;
+  handleClick: any;
+}
+class ClockControl extends React.Component<ClockControlProps,{}> {
+  constructor(public props: ClockControlProps) {
+    super(props);
+    
+  }
+
+  render() {
+    return (
+      <div>
+        <button id={this.props.name} className={this.props.buttonClass + " text-uppercase center-block"} onClick={this.props.handleClick}>
+          {this.props.name}
+        </button>
+      </div>
+    );
+  }
+}
+
+class PomodoroClock extends React.Component<any,any> {
+  interval: any;
+  runningLengthType: string;
+  defaultSession: number = 25;
+  defaultBreak: number = 5;
+  
+  constructor() {
+    super();
+    this.state = {
+      resetButtonClass: "reset-disable disable",
+      startButtonClass: "show",
+      stopButtonClass: "hide",
+      remainingSeconds: 0,
+      remainingMinutes: this.defaultSession,
+      breakLength: this.defaultBreak,
+      sessionLength: this.defaultSession,
+      runningLengthType: "session"
+    };
+
+    this.setState = this.setState.bind(this);
+    this.countdown = this.countdown.bind(this);
+    this.start = this.start.bind(this);
+    this.stop = this.stop.bind(this);
+    this.reset = this.reset.bind(this);
+  }
+
+  start() {
+    this.setState({
+      startButtonClass: "hide",
+      stopButtonClass: "show",
+      resetButtonClass: "reset-enable"
+    });
+    
+    this.interval = setInterval(this.countdown, 1000);
+  }
+
+  countdown() {
+    let remainingSeconds = this.state["remainingSeconds"]; 
+    let remainingMinutes = this.state["remainingMinutes"];
+    let runningLengthType = this.state["runningLengthType"];
+    
+    if (remainingSeconds === 0) {
+      remainingMinutes--;
+      remainingSeconds = 60;
+    }
+    remainingSeconds--;
+
+    if (remainingMinutes === 0 && remainingSeconds === 0) {
+      remainingMinutes = runningLengthType === "session" ? this.state["breakLength"] : this.state["sessionLength"];
+      runningLengthType = runningLengthType === "session" ? "break" : "session";
+    }
+
+    this.setState({
+      remainingSeconds: remainingSeconds, 
+      remainingMinutes: remainingMinutes,
+      runningLengthType: runningLengthType
+    });
+  }
+
+  stop() {
+    this.setState({
+      startButtonClass: "show",
+      stopButtonClass: "hide",
+      resetButtonClass: "reset-disable disable"
+    });
+
+    clearInterval(this.interval);
+  }
+
+  reset() {
+    clearInterval(this.interval);
+    
+    this.setState({
+      startButtonClass: "show",
+      stopButtonClass: "hide",
+      resetButtonClass: "reset-disable",
+      remainingMinutes: this.state["sessionLength"],
+      remainingSeconds: 0,
+      runningLengthType: "session"
+    });
+  }
+
+  pad(minOrSec:number):string {
+    if (minOrSec < 10) {
+      return "0" + minOrSec;
+    }
+    return minOrSec;
+  }
+  
+  modifyLength(e) {
+    if (this.interval !== null) {
+      clearInterval(this.interval);
+    }
+
+    let controlName : string = $(e.target).attr("id");
+
+    let length: number = $(e.target).val();
+    if (controlName === "session") {
+     this.setState({
+       remainingMinutes: length,
+       remainingSeconds: 0,
+    });
+  }
+    
+    this.setState({
+      [controlName + "Length"]: length,
+      startButtonClass: "show",
+      stopButtonClass: "hide",
+      resetButtonClass: "reset-disable disable"
+    });
+}
+
+  render() {
+    
+    return (
+      <div id="clock">
+        <div className="row">
+          <div className="col-xs-6 text-center">
+           <LengthControl default={this.defaultSession} length={this.state["sessionLength"]} id="session" onChange={this.modifyLength.bind(this)} /></div>
+          <div className="col-xs-6 text-center">
+            <LengthControl default={this.defaultBreak} length={this.state["breakLength"]} id="break" onChange={this.modifyLength.bind(this)} /></div>
+        </div>
+        
+          <div id="countdownArea" className="text-center text-capitalize">
+            {this.state["runningLengthType"]}
+            <div id="countdown">{this.state["remainingMinutes"]}:{this.pad(this.state["remainingSeconds"])}</div>
+          </div>
+          <div className="row">
+            <div className="col-xs-6">
+              <ClockControl name="reset" buttonClass={this.state["resetButtonClass"]} handleClick={this.reset.bind(this)}/>
+            </div>
+            <div className="col-xs-6">
+              <ClockControl name="start" buttonClass={this.state["startButtonClass"]} handleClick={this.start.bind(this)}/>
+              <ClockControl name="stop" buttonClass={this.state["stopButtonClass"]} handleClick={this.stop.bind(this)}/>
+            </div>
+          </div>
+      
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(
+  <PomodoroClock/>, document.getElementsByTagName("body")[0]);

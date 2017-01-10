@@ -1,0 +1,77 @@
+body {
+    margin: 20px;
+    background-color: black;
+    font-family: Roboto;
+    color: white;
+}
+select {
+  color: initial;
+}
+#clock {
+    width: 350px;
+}
+
+button {
+    border-radius: 40px;
+    width: 70px;
+    height: 70px;
+    padding: 5px;
+    background-clip: content-box;
+    /* support: IE9+ */
+}
+
+#start {
+    background-color: #19351e;
+    color: #47c95d;
+    border: 2px solid #19351e;
+}
+
+#stop {
+    background-color: #4d120e;
+    color: #da4646;
+    border: 2px solid #4d120e;
+}
+
+.reset-enable {
+    background-color: gray !important;
+    border: 2px solid gray !important;
+    cursor: pointer;
+}
+
+#countdown {
+    font-size: 44pt;
+}
+
+#countdownArea {
+    text-align: center;
+    margin: 20px auto 20px auto;
+}
+
+.controls {
+    margin: auto;
+}
+
+label {
+    font-weight: normal;
+}
+
+.reset-disable {
+    background-color: #141414;
+    border: 2px solid #141414;
+    color: gray !important;
+    cursor: default;
+}
+
+#sessionLength,
+#breakLength {
+    margin: 10px;
+}
+
+.fa {
+    cursor: pointer;
+}
+
+#session-length,
+#break-length {
+    margin: 10px;
+}
